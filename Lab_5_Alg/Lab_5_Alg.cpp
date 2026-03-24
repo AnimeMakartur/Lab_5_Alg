@@ -28,7 +28,6 @@ typedef struct {
 
 typedef struct complexQuestion
 {
-	int id;
 	char subject[MAX_OPT_TEXT];
 	char question[MAX_OPT_TEXT];
 	char answer[MAX_OPTIONS][MAX_OPT_TEXT];
@@ -136,7 +135,6 @@ void loadSubjectsFromDB() {
 
 void inputQuestion() {
 	CQ newQuestion;
-	int id = 1;
 	int numSubjects = 0;
 	int numQuestionsSubjectOne=0;
 	int numQuestionsSubjectTwo=0;
@@ -165,7 +163,6 @@ void inputQuestion() {
 		else if(numSubjects == 3){
 			numQuestionsSubjectThree++;
 		}
-		newQuestion.id = id++;
 		strcpy_s(newQuestion.subject, MAX_OPT_TEXT, subjectNames[numSubjects - 1]);
 		printf("Enter the question text: ");
 		gets_s(newQuestion.question, MAX_OPT_TEXT);
@@ -283,7 +280,7 @@ inputRightAnswerLAbel:
 		printf("Invalid input, try again:");
 		goto inputRightAnswerLAbel;
 	}
-	addedQuestion.id = ++totalInDb;
+	totalInDb++;
 	fwrite(&addedQuestion, sizeof(CQ), 1, database);
 	i++;
 	printf("Questions Adedd\n");
@@ -292,7 +289,7 @@ inputRightAnswerLAbel:
 CQ findQuestion(char* targetQuestion) {
 	rewind(database);
 	CQ temp;
-	CQ empty = { -1, "", "", {"", "", "", ""}, 0 }; // Структура-заглушка
+	CQ empty = {"", "", {"", "", "", ""}, -1 }; // Структура-заглушка
 
 	if (database == NULL) return empty;
 
@@ -313,7 +310,7 @@ void searchQuestion() {
 	gets_s(question, MAX_OPT_TEXT);
 	rewind(stdin);
 	CQ findedQuestion = findQuestion(question);
-	if (findedQuestion.id == -1) {
+	if (findedQuestion.correctAnswer == -1) {
 		printf("Error: Question not found in database.\n");
 	}
 	else {
@@ -401,7 +398,7 @@ int askQuestion(CQ* q, int current, int total) {
 	}
 
 	printf("Your answer (1-%d): ", MAX_OPTIONS);
-	// Validation of input
+	//перевірка введених даних
 	while (scanf_s("%d", &userAns) != 1 || !isValidNumOptions(userAns)) {
 		printf("Invalid input! Enter a number from 1 to %d: ", MAX_OPTIONS);
 		rewind(stdin);
@@ -447,8 +444,8 @@ void testing() {
 		printf("Database is empty!\n");
 		return;
 	}
-	int correctPerSub[MAX_SUBJECTS] = { 0 };
-	int selectedPerSub[MAX_SUBJECTS] = { 0 };
+	int correctPerSub[MAX_SUBJECTS] = { 0, 0, 0 };
+	int selectedPerSub[MAX_SUBJECTS] = { 0, 0, 0 };
 	int totalCorrect = 0;
 	int totalSelected = 0;
 	system("cls || clear");
@@ -458,7 +455,6 @@ void testing() {
 		if (strlen(subjectNames[i]) > 0) {
 			// Running test logic for each subject
 			correctPerSub[i] = runSubjectLogic(allData, subjectNames[i], &selectedPerSub[i]);
-
 			totalCorrect += correctPerSub[i];
 			totalSelected += selectedPerSub[i];
 		}
