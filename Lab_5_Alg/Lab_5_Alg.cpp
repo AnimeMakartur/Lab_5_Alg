@@ -10,11 +10,7 @@
 #define MAX_OPTIONS 4 // Максимальна кількість варіантів відповіді
 #define MAX_QUESTIONS 20 // Максимальна кількість питань у базі
 #define MAX_DIFFICULTY 3 // Максимальний рівень складності
-#define Q_WIDTH 50   // Ширина для стовпця "Питання"
-#define D_WIDTH 12   // Ширина для стовпця "Складність"
-#define A_WIDTH 15   // Ширина для стовпців "Відповідь 1/2/3/4"
-#define R_WIDTH 14    // Ширина для стовпця "Правильна"
-#define W_STAT 10 // Ширина для стовпця "Статус"
+
 
 //макроси
 #define isValidSubjectNum(subjectNum) ((subjectNum) >= 1 && (subjectNum) <= MAX_SUBJECTS)
@@ -290,9 +286,7 @@ CQ findQuestion(char* targetQuestion) {
 	rewind(database);
 	CQ temp;
 	CQ empty = {"", "", {"", "", "", ""}, -1 }; // Структура-заглушка
-
 	if (database == NULL) return empty;
-
 	while (fread(&temp, sizeof(CQ), 1, database)) {
 		// Використовуємо strstr для пошуку підрядка (частковий збіг)
 		// Або strcmp для повної ідентичності
