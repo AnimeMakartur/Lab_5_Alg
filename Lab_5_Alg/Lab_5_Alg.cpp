@@ -44,6 +44,8 @@ void testing();
 void totalTesting();
 void exitProgram();
 
+int checkInputFileType(char* arg);
+void readFilePath(int argc, char** argv);
 void loadSubjectsFromDB();
 CQ* readQuestions();
 void inputQuestion();
@@ -104,6 +106,32 @@ int main()
 		}
 	}
 }
+
+int checkInputFileType(char* arg) {
+	char* lastDot = strrchr(arg, '.');
+	return (lastDot != NULL && _stricmp(lastDot + 1, "bin") == 0);
+}
+void readFilePath(int argc, char** argv) {
+	if (argc > 1 && checkInputFileType(argv[1])) {
+		if (strchr(argv[1], ':') || strchr(argv[1], '/') || strchr(argv[1], '\\')) {
+			printf("Path detected: %s\n", argv[1]);
+		}
+		fopen_s(&database, argv[1], "rb+");
+	}
+	else {
+		fopen_s(&database, DB_NAME, "rb+");
+	}
+
+	if (database == NULL) {
+		printf("Initialising database...\n");
+		fopen_s(&database, (argc > 1) ? argv[1] : DB_NAME, "wb+");
+		inputQuestion();
+	}
+	else {
+		loadSubjectsFromDB();
+	}
+}
+
 void loadSubjectsFromDB() {
 	rewind(database);
 	CQ temp;
@@ -544,3 +572,4 @@ void exitProgram() {
 	if (database) fclose(database);
 	exit(0);
 }
+
